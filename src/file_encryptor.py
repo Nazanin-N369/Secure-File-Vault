@@ -26,3 +26,25 @@ def encrypt_file(
 
     with open(output_file, "wb") as file:
         file.write(encrypted_data)
+        
+        
+        
+        
+def decrypt_file(
+    input_file: str,
+    output_file: str,
+    key: bytes,
+) -> None:
+    """
+    Decrypt a Fernet encrypted file.
+    """
+
+    fernet = Fernet(key)
+
+    with open(input_file, "rb") as file:
+        encrypted_data = file.read()
+
+    decrypted_data = fernet.decrypt(encrypted_data)
+
+    with open(output_file, "wb") as file:
+        file.write(decrypted_data)
