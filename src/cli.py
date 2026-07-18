@@ -1,4 +1,7 @@
 from pathlib import Path
+from src.file_encryptor import decrypt_file
+from src.key_manager import load_key
+
 
 def show_menu():
     
@@ -77,7 +80,40 @@ def encrypt_file_flow():
 
     print("\nFile encrypted successfully.")
 
+def decrypt_file_flow():
+    
+    print("\n=== Decrypt File ===")
 
+    print("\nEnter the encrypted file path.")
+    encrypted_path = input("\nEncrypted file: ").strip()
+
+    if not Path(encrypted_path).exists():
+        print("\nEncrypted file not found.")
+        return
+
+    print("\nEnter the output decrypted file path.")
+    output_path = input("\nOutput file: ").strip()
+
+    if not output_path:
+        print("\nOutput path cannot be empty.")
+        return
+
+    print("\nEnter the encryption key file.")
+    key_path = input("\nKey file: ").strip()
+
+    if not Path(key_path).exists():
+        print("\nKey file not found.")
+        return
+
+    key = load_key(key_path)
+
+    decrypt_file(
+        encrypted_path,
+        output_path,
+        key,
+    )
+
+    print("\nFile decrypted successfully.")
 
 def run():
 
@@ -95,7 +131,7 @@ def run():
             encrypt_file_flow()
 
         elif choice == "2":
-            print("Decrypt File selected.")
+            decrypt_file_flow()
 
         elif choice == "3":
             print("Calculate Hash selected.")
