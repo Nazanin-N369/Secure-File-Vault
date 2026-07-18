@@ -1,3 +1,5 @@
+from pathlib import Path
+
 def show_menu():
     
     print("=" * 40)
@@ -32,12 +34,19 @@ def encrypt_file_flow():
     print("Example: C:\\Users\\Name\\Desktop\\secret.txt")
 
     input_path = input("\nInput file path: ").strip()
+    if not Path(input_path).exists():
+        print("\nFile not found.")
+        print("Please check the file path.")
+        return
 
 
     print("\nEnter the output encrypted file name.")
     print("Example: secret.enc")
 
     output_path = input("\nEncrypted file path: ").strip()
+    if not output_path:
+        print("\nOutput file path cannot be empty.")
+        return
 
     key = generate_key()
 
