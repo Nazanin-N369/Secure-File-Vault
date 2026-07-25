@@ -1,6 +1,8 @@
 from pathlib import Path
 from src.file_encryptor import decrypt_file
 from src.key_manager import load_key
+from src.file_hasher import calculate_file_hash
+from src.integrity_checker import verify_file_integrity
 
 
 def show_menu():
@@ -28,6 +30,14 @@ from src.file_encryptor import (
 
 from src.key_manager import save_key
 
+def ask_yes_no(message: str) -> bool:
+    while True:
+        answer = input(message).strip().upper()
+
+        if answer in ("Y", "N"):
+            return answer == "Y"
+
+        print("Please enter Y or N.")
 
 def encrypt_file_flow():
 
@@ -115,6 +125,86 @@ def decrypt_file_flow():
 
     print("\nFile decrypted successfully.")
 
+def calculate_hash_flow() -> None:
+    
+    print("\n" + "=" * 40)
+    print("Calculate File Hash")
+    print("=" * 40)
+
+    print("\nEnter file path.")
+    print("Example: C:\\Users\\User\\Desktop\\secret.pdf\n")
+
+    file_path = input("File: ").strip()
+
+    if not Path(file_path).exists():
+        print("\nFile not found.")
+        return
+
+    print("\nCalculating SHA-256...\n")
+
+    file_hash = calculate_file_hash(file_path)
+
+    print("Algorithm : SHA-256\n")
+
+    print(file_hash)
+
+    save = ask_yes_no("\nSave hash to file? (Y/N): ")
+
+    if save:
+
+        hash_path = input(
+            "\nHash file path (.txt): "
+        ).strip()
+
+        if not hash_path:
+            print("Cancelled.")
+            return
+
+        with open(hash_path, "w") as f:
+            f.write(file_hash)
+
+        print("\nHash saved successfully.")
+           
+def verify_integrity_flow() -> None:
+    
+    print("\n" + "=" * 40)
+    print("Verify File Integrity")
+    print("=" * 40)
+
+    file_path = input("\nOriginal file: ").strip()
+
+    if not Path(file_path).exists():
+        print("\nFile not found.")
+        return
+
+    hash_path = input(
+        "\nHash file: "
+    ).strip()
+
+    if not Path(hash_path).exists():
+        print("\nHash file not found.")
+        return
+
+    with open(hash_path, "r") as f:
+        expected_hash = f.read().strip()
+
+    print("\nVerifying...\n")
+
+    verified = verify_file_integrity(
+        file_path,
+        expected_hash,
+    )
+
+    if verified:
+
+        print("✓ File Integrity Verified")
+
+    else:
+
+        print("✗ WARNING")
+        print("File has been modified.")
+        
+
 def run():
 
     while True:
@@ -134,11 +224,10 @@ def run():
             decrypt_file_flow()
 
         elif choice == "3":
-            print("Calculate Hash selected.")
+            calculate_hash_flow()
 
         elif choice == "4":
-            print("Verify Integrity selected.")
-
+            verify_integrity_flow()
         else:
             print("Invalid option.")
 
