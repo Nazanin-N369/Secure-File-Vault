@@ -1,6 +1,3 @@
-from pathlib import Path
-
-
 def save_key(key: bytes, file_path: str) -> None:
     """
     Save encryption key to a file.

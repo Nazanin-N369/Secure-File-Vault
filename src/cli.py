@@ -1,8 +1,13 @@
 from pathlib import Path
+from src.key_manager import (
+    load_key,
+    save_key,
+)
 from src.file_encryptor import decrypt_file
-from src.key_manager import load_key
 from src.file_hasher import calculate_file_hash
 from src.integrity_checker import verify_file_integrity
+from src.file_encryptor import (generate_key,encrypt_file,)
+from src.paths import create_case_folder
 
 
 def show_menu():
@@ -23,12 +28,7 @@ def get_menu_choice():
     return input("\nSelect an option: ").strip()
 
 
-from src.file_encryptor import (
-    generate_key,
-    encrypt_file,
-)
 
-from src.key_manager import save_key
 
 def ask_yes_no(message: str) -> bool:
     while True:
@@ -48,37 +48,43 @@ def encrypt_file_flow():
 
     input_path = input("\nInput file path: ").strip()
     if not Path(input_path).exists():
-        print("\nFile not found.")
+        print("\n✗ File not found.")
         print("Please check the file path.")
+        input("\nPress Enter to continue...")
         return
 
 
-    print("\nEnter the output encrypted file name.")
-    print("Example: secret.enc")
+    # print("\nEnter the output encrypted file name.")
+    # print("Example: secret.enc")
 
-    output_path = input("\nEncrypted file path: ").strip()
-    if not output_path:
-        print("\nOutput file path cannot be empty.")
-        return
+    # output_path = input("\nEncrypted file path: ").strip()
+    # if not output_path:
+    #     print("\nOutput file path cannot be empty.")
+    #     input("\nPress Enter to continue...")
+    #     return
 
     key = generate_key()
+    
+    case_folder = create_case_folder(input_path)
 
+    original_name = Path(input_path).name
+    base_name = Path(input_path).stem
+    
     encrypt_file(
         input_path,
-        output_path,
         key,
     )
 
-    save = input(
+    save = ask_yes_no(
     "\nDo you want to save the encryption key? (Y/N): "
-).strip().upper()
-    if save == "Y":
+)    
+    if save :
 
         print("\nThe key file is required later to decrypt your file.")
         print("Example: secret.key")
 
         key_path = input(
-            "\nEncryption key file path: "
+            "\nEncryption key file name/path: "
         ).strip()
 
         save_key(
@@ -88,7 +94,8 @@ def encrypt_file_flow():
 
         print("\nEncryption key saved.")
 
-    print("\nFile encrypted successfully.")
+    print("\n✓ File encrypted successfully.")
+    input("\nPress Enter to continue...")
 
 def decrypt_file_flow():
     
@@ -98,7 +105,8 @@ def decrypt_file_flow():
     encrypted_path = input("\nEncrypted file: ").strip()
 
     if not Path(encrypted_path).exists():
-        print("\nEncrypted file not found.")
+        print("\n✗ Encrypted file not found.")
+        input("\nPress Enter to continue...")
         return
 
     print("\nEnter the output decrypted file path.")
@@ -106,6 +114,7 @@ def decrypt_file_flow():
 
     if not output_path:
         print("\nOutput path cannot be empty.")
+        input("\nPress Enter to continue...")
         return
 
     print("\nEnter the encryption key file.")
@@ -113,6 +122,7 @@ def decrypt_file_flow():
 
     if not Path(key_path).exists():
         print("\nKey file not found.")
+        input("\nPress Enter to continue...")
         return
 
     key = load_key(key_path)
@@ -123,7 +133,8 @@ def decrypt_file_flow():
         key,
     )
 
-    print("\nFile decrypted successfully.")
+    print("\n✓ File decrypted successfully.")
+    input("\nPress Enter to continue...")
 
 def calculate_hash_flow() -> None:
     
@@ -137,14 +148,15 @@ def calculate_hash_flow() -> None:
     file_path = input("File: ").strip()
 
     if not Path(file_path).exists():
-        print("\nFile not found.")
+        print("\n✗ File not found.")
+        input("\nPress Enter to continue...")
         return
 
     print("\nCalculating SHA-256...\n")
 
     file_hash = calculate_file_hash(file_path)
 
-    print("Algorithm : SHA-256\n")
+    print("Algorithm: SHA-256\n")
 
     print(file_hash)
 
@@ -158,12 +170,18 @@ def calculate_hash_flow() -> None:
 
         if not hash_path:
             print("Cancelled.")
+            input("\nPress Enter to continue...")
             return
 
-        with open(hash_path, "w") as f:
-            f.write(file_hash)
+        with open(
+            hash_path,
+            "w",
+            encoding="utf-8",
+        ) as file:
+            file.write(file_hash)
 
-        print("\nHash saved successfully.")
+        print("\n✓ Hash saved successfully.")
+        input("\nPress Enter to continue...")
            
 def verify_integrity_flow() -> None:
     
@@ -174,7 +192,8 @@ def verify_integrity_flow() -> None:
     file_path = input("\nOriginal file: ").strip()
 
     if not Path(file_path).exists():
-        print("\nFile not found.")
+        print("\n✗ File not found.")
+        input("\nPress Enter to continue...")
         return
 
     hash_path = input(
@@ -182,11 +201,15 @@ def verify_integrity_flow() -> None:
     ).strip()
 
     if not Path(hash_path).exists():
-        print("\nHash file not found.")
+        print("\n✗ Hash file not found.")
+        input("\nPress Enter to continue...")
         return
 
-    with open(hash_path, "r") as f:
-        expected_hash = f.read().strip()
+    with open(
+    hash_path,
+    "r",
+    encoding="utf-8",) as file:
+        expected_hash = file.read().strip()
 
     print("\nVerifying...\n")
 
@@ -198,10 +221,11 @@ def verify_integrity_flow() -> None:
     if verified:
 
         print("✓ File Integrity Verified")
+        input("\nPress Enter to continue...")
 
     else:
 
-        print("✗ WARNING")
+        print("✗ File integrity check failed.")
         print("File has been modified.")
         
 
