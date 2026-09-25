@@ -12,6 +12,15 @@ A Python-based secure file protection toolkit for file encryption, decryption, S
 * 📁 Automatic organization of processed files
 * 🖥️ Interactive Command-Line Interface (CLI)
 * 🛑 Graceful handling of user cancellation with `Ctrl+C`
+## CLI Preview
+
+### Main Interface
+
+![Secure File Vault CLI](docs/images/cli-menu.png)
+
+### Encryption Workflow
+
+![Secure File Vault Encryption](docs/images/encryption-result.png)
 
 ## 📂 Project Structure
 
