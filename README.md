@@ -16,11 +16,11 @@ A Python-based secure file protection toolkit for file encryption, decryption, S
 
 ### Main Interface
 
-![Secure File Vault CLI](docs/images/cli-menu.png)
+![Secure File Vault CLI](./docs/images/cli-menu.png)
 
 ### Encryption Workflow
 
-![Secure File Vault Encryption](docs/images/encryption-result.png)
+![Secure File Vault Encryption](./docs/images/encryption-result.png)
 
 ## 📂 Project Structure
 
